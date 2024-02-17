@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1188205533020070195}
   - component: {fileID: 3003697174010370824}
   m_Layer: 0
-  m_Name: New Palette
+  m_Name: TerrainTiles
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
