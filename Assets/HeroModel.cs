@@ -14,9 +14,8 @@ public class HeroModel : MonoBehaviour
     public GameObject[] headOptions;
     public GameObject[] shieldOptions;
     public string[] names;
-    public int ID;
 
-    public void SetInArray(int index, GameObject[] array)
+    private void SetInArray(int index, GameObject[] array)
     {
         for (int i = 0; i < array.Length; i++)
         {
@@ -31,14 +30,8 @@ public class HeroModel : MonoBehaviour
         }
     }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        makeHeroFromID();
-    }
-
     // get all permutations of a list
-    public List<List<int>> GetPermutations(List<int> list)
+    private List<List<int>> GetPermutations(List<int> list)
     {
         List<List<int>> result = new List<List<int>>();
         if (list.Count == 1)
@@ -60,7 +53,7 @@ public class HeroModel : MonoBehaviour
         return result;
     }
 
-    public void makeHeroFromID()
+    public void makeHeroFromID(int ID)
     {
         // slow and could be done and filthy but i'm in a hurry.
         List<int> atkOffsets = new List<int>() { 0, 0, 0 };
