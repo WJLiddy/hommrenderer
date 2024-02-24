@@ -15,21 +15,21 @@ public class GameCursor : MonoBehaviour
     void Update()
     {
         var mp = Input.mousePosition;
-        if(mp.x < Screen.width * 0.05f)
+        if(mp.x < Screen.width * 0.02f)
         {
             camera.transform.position -= Vector3.right * 10 * Time.deltaTime;
         }
-        if(mp.x >  Screen.width * 0.95f)
+        if(mp.x >  Screen.width * 0.98f)
         {
             camera.transform.position -= Vector3.left * 10 * Time.deltaTime;
         }
 
-        if(mp.y < Screen.height * 0.05f)
+        if(mp.y < Screen.height * 0.02f)
         {
             camera.transform.position -= Vector3.forward * 10 * Time.deltaTime;
         }
 
-        if(mp.y >  Screen.height * 0.95f)
+        if(mp.y >  Screen.height * 0.98f)
         {
             camera.transform.position -= Vector3.back * 10 * Time.deltaTime;
         }

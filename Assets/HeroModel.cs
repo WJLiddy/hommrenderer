@@ -15,6 +15,31 @@ public class HeroModel : MonoBehaviour
     public GameObject[] shieldOptions;
     public string[] names;
 
+    public HashSet<GameObject> unitMaterials = new HashSet<GameObject>();
+
+    // lol fuck me
+    public static string[] allNames = new string[]
+    {
+        "Lee", //0
+        "Oscar", //1
+        "Lancey", //2
+        "Huey", //3
+        "Greenbean", //4
+        "Carlton", //5
+        "Jaydo", //6
+        "Santa", //7
+        "Rizzy", //8
+        "Diego", //9
+        "Jimmy", //10
+        "Ginobili", //11
+        "Bobby", //12
+        "Erdtree", //13
+        "Roberto", //14
+        "Fortnite", //15
+        "Quadtree", //16
+        "Gramps" //17
+    };
+
     private void SetInArray(int index, GameObject[] array)
     {
         for (int i = 0; i < array.Length; i++)
@@ -22,10 +47,12 @@ public class HeroModel : MonoBehaviour
             if (i == index)
             {
                 array[i].SetActive(true);
+                unitMaterials.Add(array[i]);
             }
             else
             {
                 array[i].SetActive(false);
+                unitMaterials.Remove(array[i]);
             }
         }
     }
@@ -94,8 +121,5 @@ public class HeroModel : MonoBehaviour
             }
         }
     }
-    // Update is called once per frame
-    void Update()
-    {
-    }
+
 }
