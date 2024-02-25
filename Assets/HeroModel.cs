@@ -100,7 +100,6 @@ public class HeroModel : MonoBehaviour
                 // if this is the perm
                 if (IDCTR == 0)
                 {
-                    Debug.Log("ID " + names[ID] + "\nPOWER " + (1 + atk) + "\nSPEED " + (1 + spd) + "\nTOUGHNESS " + (1 + def));
                     // horseset
                     SetInArray(spd, horseOptions);
 

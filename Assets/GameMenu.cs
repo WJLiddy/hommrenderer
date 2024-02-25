@@ -8,6 +8,8 @@ public class GameMenu : MonoBehaviour
 
     public Button[] heroButtons;
     public Button[] cityButtons;
+    public WorldRenderer worldRenderer;
+    public GameCursor gameCursor;
 
     // Start is called before the first frame update
     void Start()
@@ -19,5 +21,17 @@ public class GameMenu : MonoBehaviour
     void Update()
     {
         
+    }
+
+    public void onHeroButtonClick(int index)
+    {
+        var vec = worldRenderer.heroAtIndex(index);
+        gameCursor.targetPosition = new Vector2(WorldRenderer.TILE_SIZE * vec.x, WorldRenderer.TILE_SIZE * (vec.y - 5));
+    }
+
+    public void onCityButtonClick(int index)
+    {
+        var vec = worldRenderer.cityAtIndex(index);
+        gameCursor.targetPosition = new Vector2(WorldRenderer.TILE_SIZE * vec.x, WorldRenderer.TILE_SIZE * (vec.y - 5));
     }
 }

@@ -1,19 +1,28 @@
+using SimpleJSON;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 
 public class WorldRenderer : MonoBehaviour
 {
+    public static readonly float TILE_SIZE = (5 * 0.64f);
+
+    // temp
     string json = "{\"tiles\":[[\"open\",\"open\",\"open\",\"open\",\"water\",\"water\",\"open\",\"open\",\"open\",\"open\",\"open\",\"open\",\"water\",\"water\",\"open\",\"open\",\"open\",\"open\"],[\"open\",\"open\",\"open\",\"open\",\"water\",\"water\",\"open\",\"open\",\"open\",\"open\",\"open\",\"open\",\"water\",\"open\",\"open\",\"open\",\"open\",\"open\"],[\"open\",\"open\",\"open\",\"water\",\"water\",\"open\",\"open\",\"open\",\"open\",\"open\",\"open\",\"water\",\"water\",\"open\",\"open\",\"open\",\"open\",\"open\"],[\"open\",\"open\",\"open\",\"open\",\"open\",\"open\",\"open\",\"open\",\"open\",\"open\",\"open\",\"open\",\"open\",\"open\",\"open\",\"open\",\"open\",\"open\"],[\"open\",\"open\",\"open\",\"water\",\"open\",\"open\",\"open\",\"open\",\"open\",\"open\",\"open\",\"water\",\"open\",\"open\",\"mountain\",\"open\",\"open\",\"open\"],[\"open\",\"open\",\"open\",\"open\",\"open\",\"open\",\"open\",\"open\",\"open\",\"open\",\"open\",\"open\",\"open\",\"open\",\"mountain\",\"open\",\"open\",\"mountain\"],[\"open\",\"mountain\",\"open\",\"water\",\"water\",\"open\",\"open\",\"open\",\"open\",\"open\",\"open\",\"water\",\"mountain\",\"open\",\"open\",\"open\",\"open\",\"open\"],[\"open\",\"open\",\"open\",\"open\",\"water\",\"open\",\"open\",\"open\",\"open\",\"open\",\"open\",\"water\",\"open\",\"open\",\"open\",\"open\",\"open\",\"open\"],[\"open\",\"open\",\"open\",\"open\",\"water\",\"open\",\"open\",\"open\",\"open\",\"open\",\"open\",\"water\",\"open\",\"open\",\"open\",\"open\",\"open\",\"mountain\"],[\"open\",\"open\",\"open\",\"open\",\"water\",\"open\",\"open\",\"open\",\"open\",\"open\",\"open\",\"water\",\"open\",\"open\",\"open\",\"open\",\"open\",\"mountain\"],[\"open\",\"open\",\"open\",\"open\",\"water\",\"open\",\"open\",\"open\",\"open\",\"open\",\"open\",\"water\",\"open\",\"open\",\"open\",\"open\",\"open\",\"open\"],[\"open\",\"mountain\",\"open\",\"water\",\"water\",\"open\",\"open\",\"open\",\"open\",\"open\",\"open\",\"water\",\"mountain\",\"open\",\"open\",\"open\",\"open\",\"open\"],[\"open\",\"open\",\"open\",\"open\",\"open\",\"open\",\"open\",\"open\",\"open\",\"open\",\"open\",\"open\",\"open\",\"open\",\"mountain\",\"open\",\"open\",\"mountain\"],[\"open\",\"open\",\"open\",\"water\",\"open\",\"open\",\"open\",\"open\",\"open\",\"open\",\"open\",\"water\",\"open\",\"open\",\"mountain\",\"open\",\"open\",\"open\"],[\"open\",\"open\",\"open\",\"open\",\"open\",\"open\",\"open\",\"open\",\"open\",\"open\",\"open\",\"open\",\"open\",\"open\",\"open\",\"open\",\"open\",\"open\"],[\"open\",\"open\",\"open\",\"water\",\"water\",\"open\",\"open\",\"open\",\"open\",\"open\",\"open\",\"water\",\"water\",\"open\",\"open\",\"open\",\"open\",\"open\"],[\"open\",\"open\",\"open\",\"open\",\"water\",\"water\",\"open\",\"open\",\"open\",\"open\",\"open\",\"open\",\"water\",\"open\",\"open\",\"open\",\"open\",\"open\"],[\"open\",\"open\",\"open\",\"open\",\"water\",\"water\",\"open\",\"open\",\"open\",\"open\",\"open\",\"open\",\"water\",\"water\",\"open\",\"open\",\"open\",\"open\"]],\"cities\":[[1,3,{\"built\":true,\"bitcoin_level\":3,\"defense_level\":3,\"meme_level\":0,\"unit_unlocks\":[true,false,false,false,false],\"units_available\":[0,0,0,0,0],\"units_garrisoned\":[0,0,0,0,0]},0],[6,10,{\"built\":false,\"bitcoin_level\":1,\"defense_level\":0,\"meme_level\":0,\"unit_unlocks\":[true,false,false,false,false],\"units_available\":[0,0,0,0,0],\"units_garrisoned\":[0,0,0,0,0]},1],[16,3,{\"built\":false,\"bitcoin_level\":1,\"defense_level\":0,\"meme_level\":0,\"unit_unlocks\":[true,false,false,false,false],\"units_available\":[0,0,0,0,0],\"units_garrisoned\":[0,0,0,0,0]},-1],[11,10,{\"built\":false,\"bitcoin_level\":1,\"defense_level\":0,\"meme_level\":0,\"unit_unlocks\":[true,false,false,false,false],\"units_available\":[0,0,0,0,0],\"units_garrisoned\":[0,0,0,0,0]},-1]],\"farms\":[[6,16,\"bitcoin\",-1],[6,14,\"bitcoin\",-1],[8,5,\"bitcoin\",0],[0,7,\"pot\",-1],[2,10,\"pot\",-1],[8,12,\"cereal\",-1],[7,7,\"cereal\",0],[11,16,\"bitcoin\",-1],[11,14,\"bitcoin\",-1],[9,5,\"bitcoin\",0],[17,7,\"pot\",-1],[15,10,\"pot\",-1],[9,12,\"cereal\",-1],[10,7,\"cereal\",-1]],\"players\":[{\"bitcoin\":420,\"pot\":0,\"cereal\":2,\"team\":0,\"name\":\"p0\"},{\"bitcoin\":120,\"pot\":0,\"cereal\":0,\"team\":1,\"name\":\"p1\"}],\"heroes\":[[7,5,{\"unit_stacks\":[5,0,0,0,0],\"move_points\":7,\"move_stat\":1,\"health_stat\":2,\"attack_stat\":3,\"memes\":[false,false,false,false,false],\"id\":0},0],[6,10,{\"unit_stacks\":[5,0,0,0,0],\"move_points\":7,\"move_stat\":1,\"health_stat\":2,\"attack_stat\":3,\"memes\":[false,false,false,false,false],\"id\":1},1]]}";
+    
+    // Tile junk
     public Tilemap tilemap;
     public Tilemap grid;
     public Tile grass;
     public Tile water;
     public Tile gridTile;
+    public Tile inRangeTile;
 
+    // Prefabs
     public GameObject townBase;
     public GameObject cerealBase;
     public GameObject weedBase;
@@ -21,34 +30,38 @@ public class WorldRenderer : MonoBehaviour
     public GameObject mountainBase;
     public GameObject heroBase;
 
+    // UI Junk
     public Text BTCVal;
     public Text WeedVal;
     public Text CerealVal;
-
-    private float TILE_SIZE = (5 * 0.64f);
-
-    public Material[] teamBuildingColors;
-    public Material neutralBuildingColor;
-
-    public Material[] teamUnitColors;
-
-    // keep the city data here
-    private Dictionary<Vector2Int, Tuple<GameObject, string>> structureData = new Dictionary<Vector2Int, Tuple<GameObject, string>>();
-    private List<GameObject> tiles = new List<GameObject>();
-    private Dictionary<int, GameObject> heroes = new Dictionary<int, GameObject>();
-
     public GameMenu gameMenu;
 
-    // update tiles
-    private bool tilesDirty = true;
-    void Start()
-    {
 
-    }
+    // Mats
+    public Material[] teamBuildingColors;
+    public Material neutralBuildingColor;
+    public Material[] teamUnitColors;
+
+    // Terrain junk
+    private List<GameObject> mountains = new List<GameObject>();
+
+    // structure and hero info
+    private Dictionary<Vector2Int, Tuple<GameObject, string>> structureData = new Dictionary<Vector2Int, Tuple<GameObject, string>>();
+    public Dictionary<int, Tuple<GameObject, SimpleJSON.JSONNode>> heroes = new Dictionary<int, Tuple<GameObject, SimpleJSON.JSONNode>>();
+
+    // state junk
+    private SimpleJSON.JSONNode lastState = null;
+    private int MAPSIZE = 0;
+
 
     // Update is called once per frame
     void Update()
     {
+        // just make sure mapsize was set
+        if (MAPSIZE != 0)
+        {
+            clearGridTiles();
+        }
         UpdateMap(SimpleJSON.JSON.Parse(json),0);
     }
 
@@ -57,18 +70,29 @@ public class WorldRenderer : MonoBehaviour
         return new Vector3((TILE_SIZE * 0.5f) + x * TILE_SIZE, 0, (TILE_SIZE * 0.5f) + y * TILE_SIZE);
     }
 
+    public void clearGridTiles()
+    {
+        grid.ClearAllTiles();
+        for (int x = 0; x < MAPSIZE; x++)
+        {
+            for (int y = 0; y < MAPSIZE; y++)
+            {
+                grid.SetTile(new Vector3Int(x, y, 0), gridTile);
+            }
+        }
+    }
+
     public void renderTiles(SimpleJSON.JSONNode node, int playerID)
     {
-        if (tilesDirty)
+        MAPSIZE = node["tiles"].Count;
+        if (lastState == null)
         {
+            lastState = node;
             tilemap.ClearAllTiles();
-            grid.ClearAllTiles();
-
-            for (int x = 0; x < node["tiles"].Count; x++)
+            for (int x = 0; x < MAPSIZE; x++)
             {
-                for (int y = 0; y < node["tiles"][x].Count; y++)
+                for (int y = 0; y < MAPSIZE; y++)
                 {
-                    grid.SetTile(new Vector3Int(x, (node["tiles"].Count - 1) - y, 0), gridTile);
                     string tile = node["tiles"][x][y];
                     if (tile == "open")
                     {
@@ -84,13 +108,12 @@ public class WorldRenderer : MonoBehaviour
                     {
                         tilemap.SetTile(new Vector3Int(x, y, 0), grass);
                         var v = Instantiate(mountainBase);
-                        tiles.Add(v);
+                        mountains.Add(v);
                         v.transform.position = gridToWorldPosition(x, y);
                         //Instantiate mountain tile (later)
                     }
                 }
             }
-            tilesDirty = false;
         }
     }
 
@@ -116,13 +139,13 @@ public class WorldRenderer : MonoBehaviour
                 //show it on UI
                 gameMenu.cityButtons[cityUIIdx].gameObject.SetActive(true);
                 string cityName = CityMenu.allNames[cityidx];
-                gameMenu.heroButtons[cityUIIdx].GetComponentInChildren<Text>().text = cityName;
+                gameMenu.cityButtons[cityUIIdx].GetComponentInChildren<Text>().text = cityName;
                 cityUIIdx++;
             }
             cityidx++;
         }
         // clear rest of UI
-        for (int i = cityUIIdx; i < 3; ++i)
+        for (int i = cityUIIdx; i < 5; ++i)
         {
             gameMenu.cityButtons[i].gameObject.SetActive(false);
         }
@@ -197,13 +220,15 @@ public class WorldRenderer : MonoBehaviour
                         v.GetComponent<MeshRenderer>().material = teamUnitColors[hero[3]];
                     }
                 }
-                heroes[id] = heroModel;
+                heroes[id] = new Tuple<GameObject, SimpleJSON.JSONNode>(heroModel, hero);
             }
-            heroes[id].transform.position = gridToWorldPosition(x, y);
+            heroes[id] = new Tuple<GameObject, SimpleJSON.JSONNode>(heroes[id].Item1, hero);
+
+            heroes[id].Item1.transform.position = gridToWorldPosition(x, y);
             // boost hero up if in a town
             if (structureData.ContainsKey(new Vector2Int(x, y)))
             {
-                heroes[id].transform.position += new Vector3(0, 0.5f, -1.5f);
+                heroes[id].Item1.transform.position += new Vector3(0, 0.5f, -1.5f);
             }
             // if hero's on the team...
             if (hero[3] == playerID)
@@ -229,5 +254,87 @@ public class WorldRenderer : MonoBehaviour
         renderFarms(node, playerID);
         renderPlayerUI(node, playerID);
         renderHeroes(node, playerID);
+    }
+
+   public List<Vector2Int> tilesWithinRangeOfHero(int x, int y, int dist)
+   {
+        Vector2Int[] directions = new Vector2Int[4] { new Vector2Int(-1, 0), new Vector2Int(1, 0), new Vector2Int(0, 1), new Vector2Int(0, -1) };
+        // get the tiles within range of hero
+        List<Tuple<Vector2Int,int>> queue = new List<Tuple<Vector2Int,int>>();
+        queue.Add(new Tuple<Vector2Int,int>(new Vector2Int(x, y), dist));
+        HashSet<Vector2Int> visited = new HashSet<Vector2Int>();
+        // bfs
+        while (queue.Count > 0)
+        {
+            var v = queue[0];
+            queue.RemoveAt(0);
+
+            visited.Add(v.Item1);
+            // cutoff if dist = 0.
+            if (v.Item2 == 0)
+            {
+                continue;
+            }
+            foreach (var dir in directions)
+            {
+                var newV = v.Item1 + dir;
+
+                if (lastState["tiles"][newV.x][newV.y] == "water" || lastState["tiles"][newV.x][newV.y] == "mountain")
+                {
+                    continue;
+                }
+                if (visited.Contains(v.Item1 + dir))
+                {
+                    continue;
+                }
+                queue.Add(new Tuple<Vector2Int, int>(newV, v.Item2 - 1));
+            }
+        }
+        return visited.ToList();
+   }
+
+   // renderGrid
+   public void setGridTiles(List<Vector2Int> tiles)
+   {
+        foreach (var v in tiles)
+        {
+            grid.SetTile(new Vector3Int(v.x, v.y, 0), inRangeTile);
+        }
+   }
+
+    // this might break if called when lastState changed.
+    public Vector2 heroAtIndex(int index)
+    {
+        foreach (SimpleJSON.JSONNode hero in lastState["heroes"].AsArray)
+        {
+            // if hero's on the team...
+            if (hero[3] == 0)
+            {
+                if (index == 0)
+                {
+                    //show it on UI
+                    return new Vector2(hero[0], hero[1]);
+                }
+                index--;
+            }
+        }
+        return Vector2.zero;
+    }
+
+    public Vector2 cityAtIndex(int index)
+    {
+        foreach (SimpleJSON.JSONNode city in lastState["cities"].AsArray)
+        {
+            if (city[3] == 0)
+            {
+                if (index == 0)
+                {
+                    //show it on UI
+                    return new Vector2(city[0], city[1]);
+                }
+                index--;
+            }
+        }
+        return Vector2.zero;
     }
 }
