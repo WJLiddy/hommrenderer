@@ -1,3 +1,4 @@
+using SimpleJSON;
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
@@ -11,7 +12,10 @@ public class GameCursor : MonoBehaviour
     public GameObject cityInfoPopup;
     public RectTransform canvas;
     public WorldRenderer worldRenderer;
-    public GameObject selectedItem;
+    
+    public SimpleJSON.JSONNode selectedUnit;
+    public SimpleJSON.JSONNode selectedCity;
+
 
     public Vector2 targetPosition;
 
@@ -78,9 +82,9 @@ public class GameCursor : MonoBehaviour
         }
 
         // check for mouse click on hero
-        if (Input.GetMouseButtonDown(0))
+        if(selectedUnit != null)
         {
-            selectedItem = heroUnderCursor;
+            worldRenderer.setGridTiles(worldRenderer.tilesWithinRangeOfHero(selectedUnit[0], selectedUnit[1], selectedUnit[2]["move_points"]));
         }
 
     }
@@ -95,7 +99,17 @@ public class GameCursor : MonoBehaviour
                 heroInfoPopup.SetActive(true);
                 heroInfoPopup.transform.position = Input.mousePosition;
                 heroInfoPopup.transform.Find("Panel").Find("Hero Name").GetComponent<Text>().text = HeroModel.allNames[hero.Item2[2]["id"]];
-                worldRenderer.setGridTiles(worldRenderer.tilesWithinRangeOfHero(x, y, 3 ));
+                heroInfoPopup.transform.Find("Panel").Find("InfStack").Find("Text").GetComponent<Text>().text = hero.Item2[2]["unit_stacks"][0].ToString();
+                heroInfoPopup.transform.Find("Panel").Find("ArcStack").Find("Text").GetComponent<Text>().text = hero.Item2[2]["unit_stacks"][1].ToString();
+                heroInfoPopup.transform.Find("Panel").Find("CavStack").Find("Text").GetComponent<Text>().text = hero.Item2[2]["unit_stacks"][2].ToString();
+                heroInfoPopup.transform.Find("Panel").Find("BalStack").Find("Text").GetComponent<Text>().text = hero.Item2[2]["unit_stacks"][3].ToString();
+                heroInfoPopup.transform.Find("Panel").Find("WizStack").Find("Text").GetComponent<Text>().text = hero.Item2[2]["unit_stacks"][4].ToString();
+                heroInfoPopup.transform.Find("Panel").Find("MoveAmt").Find("Text").GetComponent<Text>().text = hero.Item2[2]["move_points"].ToString();
+
+                if (Input.GetMouseButtonDown(0))
+                {
+                    selectedUnit = hero.Item2;
+                }
                 return;
             }
         }
