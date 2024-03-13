@@ -10,7 +10,7 @@ public class GameMenu : MonoBehaviour
     public Button[] cityButtons;
     public WorldRenderer worldRenderer;
     public GameCursor gameCursor;
-
+    public GameClient gameClient;
     // Start is called before the first frame update
     void Start()
     {
@@ -33,5 +33,10 @@ public class GameMenu : MonoBehaviour
     {
         var vec = worldRenderer.cityAtIndex(index);
         gameCursor.targetPosition = new Vector2(WorldRenderer.TILE_SIZE * vec.x, WorldRenderer.TILE_SIZE * (vec.y - 5));
+    }
+
+    public void onEndTurnClick()
+    {
+        gameClient.addEndTurnCommandToQueue();
     }
 }
