@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 public class CityInfoPanel : MonoBehaviour
 {
+    public GameObject heroPanel;
     // Start is called before the first frame update
     void Start()
     {
@@ -20,7 +21,7 @@ public class CityInfoPanel : MonoBehaviour
         transform.Find("Garrison").Find(unitButton).gameObject.SetActive(city["unit_unlocks"][i]);
     }
 
-    public void setCityData(SimpleJSON.JSONNode cityNode)
+    public void setCityData(SimpleJSON.JSONNode cityNode, SimpleJSON.JSONNode visitingHero)
     {
         Debug.Log(cityNode);
         JSONObject city = cityNode[2].AsObject;
@@ -38,5 +39,16 @@ public class CityInfoPanel : MonoBehaviour
         garrison += city["units_garrisoned"][3] + "(" + city["units_available"][3] + " avail)\n";
         garrison += city["units_garrisoned"][4] + "(" + city["units_available"][4] + " avail)\n";
         transform.Find("Garrison").Find("Desc").GetComponent<Text>().text = garrison;
+
+        // if there's a visiting hero, set that
+        heroPanel.SetActive(visitingHero != null);
+        if (visitingHero != null)
+        {
+            heroPanel.transform.Find("InfStack").Find("Count").GetComponent<Text>().text = visitingHero[2]["unit_stacks"][0].ToString();
+            heroPanel.transform.Find("ArcStack").Find("Count").GetComponent<Text>().text = visitingHero[2]["unit_stacks"][1].ToString();
+            heroPanel.transform.Find("CavStack").Find("Count").GetComponent<Text>().text = visitingHero[2]["unit_stacks"][2].ToString();
+            heroPanel.transform.Find("BalStack").Find("Count").GetComponent<Text>().text = visitingHero[2]["unit_stacks"][3].ToString();
+            heroPanel.transform.Find("WizStack").Find("Count").GetComponent<Text>().text = visitingHero[2]["unit_stacks"][4].ToString();
+        }
     }
 }

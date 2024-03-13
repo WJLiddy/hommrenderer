@@ -109,7 +109,7 @@ public class GameCursor : MonoBehaviour
         else if (cursorState == CursorState.CITY)
         {
             cityInfoPanel.gameObject.SetActive(true);
-            cityInfoPanel.setCityData(worldRenderer.cities[selectedCity].Item2);
+            cityInfoPanel.setCityData(worldRenderer.cities[selectedCity].Item2, heroAt(worldRenderer.cities[selectedCity].Item2[0], worldRenderer.cities[selectedCity].Item2[1]));
         }
 
         // condition 2 : hero selected
@@ -134,7 +134,7 @@ public class GameCursor : MonoBehaviour
                     // city
                     checkForCity((int)(point.x), (int)(point.z));
                     selectedHero = -1;
-                    cursorState = CursorState.NONE;
+                    cursorState = CursorState.CITY;
                 }
 
             }
@@ -191,6 +191,20 @@ public class GameCursor : MonoBehaviour
         }
         return false;
     }
+
+    public SimpleJSON.JSONArray heroAt(int x, int y)
+    {
+        foreach (var hero in worldRenderer.heroes.Values)
+        {
+            if (hero.Item2[0] == x && hero.Item2[1] == y)
+            {
+                return hero.Item2 as SimpleJSON.JSONArray;
+            }
+        }
+        return null;
+    }
+
+
     public void checkForCity(int x, int y)
     {
         foreach (var city in worldRenderer.cities.Values)
@@ -250,5 +264,13 @@ public class GameCursor : MonoBehaviour
         gameClient.addBuyCommandToQueue(new Vector2Int(selectedCity[0], selectedCity[1]),buyString);
     }
 
+    public void sendTransferCommandCityToHero(int unitID)
+    {
+        gameClient.addTransferCommandFromCityToHero(new Vector2Int(selectedCity[0], selectedCity[1]), unitID);
+    }
 
+    public void sendTransferCommandHeroToCity(int unitID)
+    {
+        gameClient.addTransferCommandFromHeroToCity(new Vector2Int(selectedCity[0], selectedCity[1]), unitID);
+    }
 }

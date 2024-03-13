@@ -120,4 +120,17 @@ public class GameClient : MonoBehaviour
         commandQueue.Add(command);
     }
 
+    public void addTransferCommandFromHeroToCity(Vector2Int target, int typeID)
+    {
+        SimpleJSON.JSONNode command = SimpleJSON.JSON.Parse("{}");
+        command["command"] = "transfer";
+        command["player"] = 0;
+        command["src"] = makeVector2(target);
+        command["dest"] = makeVector2(target);
+        command["srctype"] = "hero";
+        command["desttype"] = "city";
+        command["type"] = typeID;
+        commandQueue.Add(command);
+    }
+
 }
