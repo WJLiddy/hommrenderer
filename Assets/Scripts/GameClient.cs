@@ -105,9 +105,19 @@ public class GameClient : MonoBehaviour
         command["target"] = makeVector2(target);
         command["buy"] = buy;
         commandQueue.Add(command);
-
     }
 
+    public void addTransferCommandFromCityToHero(Vector2Int target, int typeID)
+    {
+        SimpleJSON.JSONNode command = SimpleJSON.JSON.Parse("{}");
+        command["command"] = "transfer";
+        command["player"] = 0;
+        command["src"] = makeVector2(target);
+        command["dest"] = makeVector2(target);
+        command["srctype"] = "city";
+        command["desttype"] = "hero";
+        command["type"] = typeID;
+        commandQueue.Add(command);
+    }
 
-    // todo: buy, donate, transfer.
 }

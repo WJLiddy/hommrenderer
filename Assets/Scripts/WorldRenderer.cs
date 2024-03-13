@@ -31,8 +31,9 @@ public class WorldRenderer : MonoBehaviour
     public Text BTCVal;
     public Text WeedVal;
     public Text CerealVal;
+    public Text Turn;
+    public Text Turnover;
     public GameMenu gameMenu;
-
 
     // Mats
     public Material[] teamBuildingColors;
@@ -183,6 +184,19 @@ public class WorldRenderer : MonoBehaviour
     public void renderPlayerUI(SimpleJSON.JSONNode node, int playerID)
     {
         int ctr = 0;
+        Turn.text = "Week " + (1+((int)(node["day"].AsInt / 7))) + ", Day " + (1+(node["day"].AsInt % 7));
+        Debug.Log(node["players"][playerID]["team"] != node["team"]);
+        
+        // fuck!
+        if (node["team"])
+        {
+            Turnover.text = " (Turn Over)";
+        }
+        else
+        {
+            Turnover.text = "";
+        }
+
         foreach (SimpleJSON.JSONNode player in node["players"].AsArray)
         {
             if (ctr == playerID)
