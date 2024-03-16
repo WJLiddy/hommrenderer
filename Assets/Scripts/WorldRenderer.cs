@@ -27,6 +27,10 @@ public class WorldRenderer : MonoBehaviour
     public GameObject mountainBase;
     public GameObject heroBase;
 
+    public GameObject bitcoinGroundItem;
+    public GameObject weedGroundItem;
+    public GameObject cerealGroundItem;
+
     // UI Junk
     public Text BTCVal;
     public Text WeedVal;
@@ -52,6 +56,11 @@ public class WorldRenderer : MonoBehaviour
     private SimpleJSON.JSONNode lastState = null;
     private int MAPSIZE = 0;
 
+    public BattleRender br;
+
+    public BattleView bv;
+
+    public List<GameObject> its = new List<GameObject>();
 
     // Update is called once per frame
     void Update()
@@ -60,6 +69,47 @@ public class WorldRenderer : MonoBehaviour
         if (MAPSIZE != 0)
         {
             clearGridTiles();
+        }
+
+        if (lastState != null)
+        {
+            // move hero to target spot
+            // we don't know the path of the previous move, so we just move the hero to the target spot
+            // todo design flaw
+            foreach (var v in heroes)
+            {
+
+                v.Value.Item1.GetComponent<Animator>().SetBool("fight", false);
+                var targ = gridToWorldPosition(v.Value.Item2[0], v.Value.Item2[1]);
+
+                // walk anim
+                if(Vector3.Distance(Vector3.Scale(new Vector3(1,0,1),v.Value.Item1.transform.position), targ) < 2)
+                {
+                    v.Value.Item1.GetComponent<Animator>().SetBool("walk", false);
+                    v.Value.Item1.transform.position = targ;
+
+                    // boost hero up if in a town
+                    if (cities.ContainsKey(new Vector2Int(v.Value.Item2[0], v.Value.Item2[1])) || farms.ContainsKey(new Vector2Int(v.Value.Item2[0], v.Value.Item2[1])))
+                    {
+                        v.Value.Item1.transform.position = targ + new Vector3(0, 0.5f, -1.5f);
+                    }
+                }
+                else
+                {
+                    v.Value.Item1.transform.position = Vector3.MoveTowards(v.Value.Item1.transform.position, targ, 10 * Time.deltaTime);
+                    v.Value.Item1.GetComponent<Animator>().SetBool("walk", true);
+                    v.Value.Item1.transform.LookAt(targ);
+                }
+
+                // battle anim
+                foreach(var b in lastState["battles"].AsArray)
+                {
+                    if (v.Value.Item2[0] == b.Value[0] || v.Value.Item2[1] == b.Value[1])
+                    {
+                        v.Value.Item1.GetComponent<Animator>().SetBool("fight", true);
+                    }
+                }
+        }
         }
     }
 
@@ -85,7 +135,6 @@ public class WorldRenderer : MonoBehaviour
         MAPSIZE = node["tiles"].Count;
         if (lastState == null)
         {
-            lastState = node;
             tilemap.ClearAllTiles();
             for (int x = 0; x < MAPSIZE; x++)
             {
@@ -185,16 +234,36 @@ public class WorldRenderer : MonoBehaviour
     {
         int ctr = 0;
         Turn.text = "Week " + (1+((int)(node["day"].AsInt / 7))) + ", Day " + (1+(node["day"].AsInt % 7));
-        Debug.Log(node["players"][playerID]["team"] != node["team"]);
         
-        // fuck!
-        if (node["team"])
+        if (node["players"][playerID]["ended_turn"])
         {
             Turnover.text = " (Turn Over)";
         }
         else
         {
             Turnover.text = "";
+        }
+
+        // send end turn indicators
+        for(int i = 0; i !=6; ++i)
+        {
+            if(node["players"].AsArray.Count <= i)
+            {
+                //FUCK
+                Turnover.transform.parent.Find(i.ToString()).gameObject.SetActive(false);
+            }
+
+            var c = Turnover.transform.parent.Find(i.ToString()).gameObject.GetComponent<Image>().color;
+            if (node["players"][i]["ended_turn"])
+            {
+                //FUCK
+                Turnover.transform.parent.Find(i.ToString()).gameObject.GetComponent<Image>().color = new Color(c.r, c.g, c.b, 0.2f);
+            }
+            else
+            {
+
+                Turnover.transform.parent.Find(i.ToString()).gameObject.GetComponent<Image>().color = new Color(c.r, c.g, c.b, 1f);
+            }
         }
 
         foreach (SimpleJSON.JSONNode player in node["players"].AsArray)
@@ -210,14 +279,48 @@ public class WorldRenderer : MonoBehaviour
         }
     }
 
+    public void renderGroundResources(SimpleJSON.JSONNode node)
+    {
+        foreach(var v in its)
+        {
+            Destroy(v.gameObject);
+        }
+        its.Clear();
+
+        foreach (SimpleJSON.JSONNode hero in node["grounditems"].AsArray)
+        {
+            int x = hero[0];
+            int y = hero[1];
+            string type = hero[2];
+            switch(type)
+            {
+                case "bitcoin":
+                    var v = Instantiate(bitcoinGroundItem, gridToWorldPosition(x, y), Quaternion.identity);
+                    its.Add(v);
+                    break;
+                case "pot":
+                    v = Instantiate(weedGroundItem, gridToWorldPosition(x, y), Quaternion.identity);
+                    its.Add(v);
+                    break;
+                case "cereal":
+                    v = Instantiate(cerealGroundItem, gridToWorldPosition(x, y), Quaternion.identity);
+                    its.Add(v);
+                    break;
+            }
+        }
+    }
+
     public void renderHeroes(SimpleJSON.JSONNode node, int playerID)
     {
         int heroUIIdx = 0;
+        HashSet<int> seenIDs = new HashSet<int>();
+
         foreach (SimpleJSON.JSONNode hero in node["heroes"].AsArray)
         {
             int x = hero[0];
             int y = hero[1];
             int id = hero[2]["id"];
+            seenIDs.Add(hero[2]["id"]);
             if (!heroes.ContainsKey(id))
             {
                 var heroModel = Instantiate(heroBase);
@@ -234,16 +337,13 @@ public class WorldRenderer : MonoBehaviour
                         v.GetComponent<MeshRenderer>().material = teamUnitColors[hero[3]];
                     }
                 }
+
                 heroes[id] = new Tuple<GameObject, SimpleJSON.JSONNode>(heroModel, hero);
+                heroes[id].Item1.transform.position = gridToWorldPosition(x, y);
             }
             heroes[id] = new Tuple<GameObject, SimpleJSON.JSONNode>(heroes[id].Item1, hero);
 
-            heroes[id].Item1.transform.position = gridToWorldPosition(x, y);
-            // boost hero up if in a town
-            if (cities.ContainsKey(new Vector2Int(x, y)))
-            {
-                heroes[id].Item1.transform.position += new Vector3(0, 0.5f, -1.5f);
-            }
+
             // if hero's on the team...
             if (hero[3] == playerID)
             {
@@ -260,6 +360,21 @@ public class WorldRenderer : MonoBehaviour
         {
             gameMenu.heroButtons[i].gameObject.SetActive(false);
         }
+
+        var toRemove = new List<int>();
+        // assert the hero did not die
+        foreach (var hero in heroes)
+        {
+            if (!seenIDs.Contains(hero.Key))
+            {
+                Destroy(hero.Value.Item1);
+                toRemove.Add(hero.Key);
+            }
+        }
+        foreach(var v in toRemove)
+        {
+            heroes.Remove(v);
+        }
     }
     public void UpdateMap(SimpleJSON.JSONNode node, int playerID)
     {
@@ -268,6 +383,14 @@ public class WorldRenderer : MonoBehaviour
         renderFarms(node, playerID);
         renderPlayerUI(node, playerID);
         renderHeroes(node, playerID);
+        renderGroundResources(node);
+        bv.Populate(node);
+
+        if(bv.watch != -1)
+        { 
+            br.Render(node["battles"][bv.watch][4]);
+        }
+        lastState = node;
     }
 
    // next -> prev
@@ -353,12 +476,12 @@ public class WorldRenderer : MonoBehaviour
    }
 
     // this might break if called when lastState changed.
-    public Vector2 heroAtIndex(int index)
+    public Vector2 heroAtIndex(int index, int team)
     {
         foreach (SimpleJSON.JSONNode hero in lastState["heroes"].AsArray)
         {
             // if hero's on the team...
-            if (hero[3] == 0)
+            if (hero[3] == team)
             {
                 if (index == 0)
                 {
@@ -370,11 +493,11 @@ public class WorldRenderer : MonoBehaviour
         return Vector2.zero;
     }
 
-    public Vector2 cityAtIndex(int index)
+    public Vector2 cityAtIndex(int index, int team)
     {
         foreach (SimpleJSON.JSONNode city in lastState["cities"].AsArray)
         {
-            if (city[3] == 0)
+            if (city[3] == team)
             {
                 if (index == 0)
                 {

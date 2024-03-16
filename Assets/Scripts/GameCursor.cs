@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -172,7 +171,6 @@ public class GameCursor : MonoBehaviour
         Vector2Int cumMove = Vector2Int.zero;
         foreach (var move in moves)
         {
-            Debug.Log(move);
             gameClient.addMoveCommandToQueue(new Vector2Int(worldRenderer.heroes[selectedHero].Item2[0], worldRenderer.heroes[selectedHero].Item2[1]) + cumMove, move);
             cumMove += move;
         }

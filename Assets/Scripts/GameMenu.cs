@@ -25,13 +25,13 @@ public class GameMenu : MonoBehaviour
 
     public void onHeroButtonClick(int index)
     {
-        var vec = worldRenderer.heroAtIndex(index);
+        var vec = worldRenderer.heroAtIndex(index, gameClient.PLAYER_ID);
         gameCursor.targetPosition = new Vector2(WorldRenderer.TILE_SIZE * vec.x, WorldRenderer.TILE_SIZE * (vec.y - 5));
     }
 
     public void onCityButtonClick(int index)
     {
-        var vec = worldRenderer.cityAtIndex(index);
+        var vec = worldRenderer.cityAtIndex(index, gameClient.PLAYER_ID);
         gameCursor.targetPosition = new Vector2(WorldRenderer.TILE_SIZE * vec.x, WorldRenderer.TILE_SIZE * (vec.y - 5));
     }
 

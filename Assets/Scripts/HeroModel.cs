@@ -13,7 +13,8 @@ public class HeroModel : MonoBehaviour
     public GameObject[] bodyOptions;
     public GameObject[] headOptions;
     public GameObject[] shieldOptions;
-    public string[] names;
+
+    public GameObject[] gear;
 
     public HashSet<GameObject> unitMaterials = new HashSet<GameObject>();
 
@@ -111,6 +112,8 @@ public class HeroModel : MonoBehaviour
                     // weaponset
                     SetInArray((atk * 6 + atkOffsets[atk]), weaponOptions);
 
+                    // print everything
+                    //Debug.Log("Hero: " + ID + allNames[ID] + " Atk: " + atk + " Spd: " + spd + " Def: " + def);
                     return;
                 }
                 // not the perm. cycle through each speed, def, and attack position.

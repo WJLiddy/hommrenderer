@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.UI;
 using static UnityEngine.GraphicsBuffer;
 
 public class GameClient : MonoBehaviour
@@ -11,20 +12,81 @@ public class GameClient : MonoBehaviour
     public SimpleJSON.JSONArray commandQueue;
     public WorldRenderer worldRenderer;
 
+    public int PLAYER_ID = -1;
+    public string pname = "";
+    public int buttonCol = 0;
+    public InputField t;
+    public Text buttonName;
+
+    public GameObject[] showOnLaunch;
+    public GameObject[] showOnSetup;
+
     void Start()
     {
         commandQueue = SimpleJSON.JSONObject.Parse("[]").AsArray; // fuck
+        foreach(var v in showOnLaunch)
+        {
+            v.SetActive(false);
+        }
+        foreach(var v in showOnSetup)
+        {
+            v.SetActive(true);
+        }
+    }
+
+    public void Join()
+    {
+        if(t.text == "")
+        {
+            return;
+        }
+
+        pname = t.text;
+        PLAYER_ID = buttonCol;
+
+        foreach (var v in showOnLaunch)
+        {
+            v.SetActive(true);
+        }
+        foreach (var v in showOnSetup)
+        {
+            v.SetActive(false);
+        }
+    }
+
+    public void incrCol()
+    {
+        buttonCol += 1;
+        if(buttonCol == 6)
+        {
+            buttonCol = 0;
+        }
+        switch(buttonCol)
+        {
+            case 0: buttonName.text = "BLUE"; break;
+            case 1: buttonName.text = "RED"; break;
+            case 2: buttonName.text = "GREEN"; break;
+            case 3: buttonName.text = "YELLOW"; break;
+            case 4: buttonName.text = "PURPLE"; break;
+            case 5: buttonName.text = "ORANGE"; break;
+        }
+
     }
 
     void Update()
     {
+        if(PLAYER_ID == -1)
+        {
+            // do nothing until set
+            return;
+        }
+
         timer -= Time.deltaTime;
 
         if (timer < 0)
         {
             if (commandQueue.Count > 0)
             {
-                Debug.Log("sending command " + commandQueue.ToString());
                 StartCoroutine(postRequest("localhost:7775", commandQueue.ToString()));
                 // dispatched the command, clear queue
                 commandQueue = SimpleJSON.JSONObject.Parse("[]").AsArray; // fuck
@@ -57,7 +119,7 @@ public class GameClient : MonoBehaviour
             Debug.Log("Received: " + uwr.downloadHandler.text);
         }
 
-        worldRenderer.UpdateMap(SimpleJSON.JSON.Parse(uwr.downloadHandler.text), 0);
+        worldRenderer.UpdateMap(SimpleJSON.JSON.Parse(uwr.downloadHandler.text), PLAYER_ID);
     }
 
     private JSONArray makeVector2(Vector2Int vector)
@@ -72,9 +134,11 @@ public class GameClient : MonoBehaviour
     {
         SimpleJSON.JSONNode command = SimpleJSON.JSON.Parse("{}");
         command["command"] = "move";
-        command["player"] = 0;
+        command["player"] = PLAYER_ID;
         command["target"] = makeVector2(target);
         command["delta"] = makeVector2(delta);
+        // move command comes with name FIXME
+        command["name"] = pname;
         commandQueue.Add(command);
     }
 
@@ -82,7 +146,7 @@ public class GameClient : MonoBehaviour
     {
         SimpleJSON.JSONNode command = SimpleJSON.JSON.Parse("{}");
         command["command"] = "endturn";
-        command["player"] = 0;
+        command["player"] = PLAYER_ID;
         commandQueue.Add(command);
     }
 
@@ -90,7 +154,7 @@ public class GameClient : MonoBehaviour
     {
         SimpleJSON.JSONNode command = SimpleJSON.JSON.Parse("{}");
         command["command"] = "build";
-        command["player"] = 0;
+        command["player"] = PLAYER_ID;
         command["target"] = makeVector2(target);
         command["build"] = build;
         commandQueue.Add(command);
@@ -101,7 +165,7 @@ public class GameClient : MonoBehaviour
     {
         SimpleJSON.JSONNode command = SimpleJSON.JSON.Parse("{}");
         command["command"] = "buy";
-        command["player"] = 0;
+        command["player"] = PLAYER_ID;
         command["target"] = makeVector2(target);
         command["buy"] = buy;
         commandQueue.Add(command);
@@ -111,7 +175,7 @@ public class GameClient : MonoBehaviour
     {
         SimpleJSON.JSONNode command = SimpleJSON.JSON.Parse("{}");
         command["command"] = "transfer";
-        command["player"] = 0;
+        command["player"] = PLAYER_ID;
         command["src"] = makeVector2(target);
         command["dest"] = makeVector2(target);
         command["srctype"] = "city";
@@ -124,7 +188,7 @@ public class GameClient : MonoBehaviour
     {
         SimpleJSON.JSONNode command = SimpleJSON.JSON.Parse("{}");
         command["command"] = "transfer";
-        command["player"] = 0;
+        command["player"] = PLAYER_ID;
         command["src"] = makeVector2(target);
         command["dest"] = makeVector2(target);
         command["srctype"] = "hero";
