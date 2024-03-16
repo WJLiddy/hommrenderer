@@ -9,6 +9,7 @@ public class BattleView : MonoBehaviour
     public GameObject bannerBase;
     public GameObject leftPanel;
     public int watch;
+    public BattleRender br;
     // Start is called before the first frame update
     void Start()
     {
@@ -24,6 +25,7 @@ public class BattleView : MonoBehaviour
     {
         watch = battle;
         gameObject.SetActive(true);
+        br.Clear();
     }
 
     public void Populate(SimpleJSON.JSONNode gameState)
@@ -39,7 +41,7 @@ public class BattleView : MonoBehaviour
         {
             var i = Instantiate(bannerBase);
             i.transform.SetParent(leftPanel.transform);
-            i.transform.GetComponent<RectTransform>().anchoredPosition = new Vector2(-50 + (200 * cnt), -50);
+            i.transform.GetComponent<RectTransform>().anchoredPosition = new Vector2(-50 + (-100 * cnt), -50);
             i.transform.GetComponentInChildren<Text>().text = v.Value[4]["info"];
             int tmp = cnt;
             i.transform.GetComponent<Button>().onClick.AddListener(delegate () { Open(tmp); });

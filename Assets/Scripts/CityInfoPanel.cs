@@ -23,7 +23,6 @@ public class CityInfoPanel : MonoBehaviour
 
     public void setCityData(SimpleJSON.JSONNode cityNode, SimpleJSON.JSONNode visitingHero)
     {
-        Debug.Log(cityNode);
         JSONObject city = cityNode[2].AsObject;
         setBuildingData(city, 0, "BuyBarrack", "BuyInf");
         setBuildingData(city, 1, "BuyRange", "BuyArc");

@@ -1,7 +1,6 @@
 using SimpleJSON;
 using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
@@ -94,13 +93,13 @@ public class GameCursor : MonoBehaviour
             // check if we clicked a hero.
             if (pointSet)
             {
-                checkForHero((int)(point.x), (int)(point.z));
+                checkForHero((int)(point.x), (int)(point.z), gameClient.PLAYER_ID);
             }
 
             // check if we clicked a city.
             if (pointSet && cursorState != CursorState.HERO)
             {
-                checkForCity((int)(point.x), (int)(point.z));
+                checkForCity((int)(point.x), (int)(point.z), gameClient.PLAYER_ID);
             }
 
         }
@@ -115,7 +114,7 @@ public class GameCursor : MonoBehaviour
         else if (cursorState == CursorState.HERO)
         {
             // show the grid tiles.
-            worldRenderer.setGridTiles(worldRenderer.tilesWithinRangeOfHero(worldRenderer.heroes[selectedHero].Item2[0], worldRenderer.heroes[selectedHero].Item2[1], worldRenderer.heroes[selectedHero].Item2[2]["move_points"]).Keys.ToList());
+            worldRenderer.setGridTiles(worldRenderer.tilesWithinRangeOfHero(worldRenderer.heroes[selectedHero].Item2[0], worldRenderer.heroes[selectedHero].Item2[1], worldRenderer.heroes[selectedHero].Item2[2]["move_points"], gameClient.PLAYER_ID).Keys.ToList());
             
             // check for a move command.
             if (Input.GetMouseButtonDown(0) && pointSet)
@@ -131,9 +130,8 @@ public class GameCursor : MonoBehaviour
                 if (diff.magnitude == 0 && cityAt((int)(point.x), (int)(point.z)))
                 {
                     // city
-                    checkForCity((int)(point.x), (int)(point.z));
+                    checkForCity((int)(point.x), (int)(point.z), gameClient.PLAYER_ID);
                     selectedHero = -1;
-                    cursorState = CursorState.CITY;
                 }
 
             }
@@ -143,7 +141,7 @@ public class GameCursor : MonoBehaviour
     public void doMove(Vector3 point)
     {
         // walk back from the selected coordinate
-        var search = worldRenderer.tilesWithinRangeOfHero(worldRenderer.heroes[selectedHero].Item2[0], worldRenderer.heroes[selectedHero].Item2[1], worldRenderer.heroes[selectedHero].Item2[2]["move_points"]);
+        var search = worldRenderer.tilesWithinRangeOfHero(worldRenderer.heroes[selectedHero].Item2[0], worldRenderer.heroes[selectedHero].Item2[1], worldRenderer.heroes[selectedHero].Item2[2]["move_points"], gameClient.PLAYER_ID);
 
         var ptr = new Vector2Int((int)point.x, (int)point.z);
 
@@ -203,13 +201,12 @@ public class GameCursor : MonoBehaviour
     }
 
 
-    public void checkForCity(int x, int y)
+    public void checkForCity(int x, int y, int team)
     {
         foreach (var city in worldRenderer.cities.Values)
         {
-            if (city.Item2[0] == x && city.Item2[1] == y && Input.GetMouseButtonDown(0))
+            if (city.Item2[0] == x && city.Item2[1] == y && Input.GetMouseButtonDown(0) && city.Item2[3] == team)
             {
-
                 cursorState = CursorState.CITY;
                 selectedCity = new Vector2Int(city.Item2[0], city.Item2[1]);
                 // zoom to city
@@ -218,7 +215,44 @@ public class GameCursor : MonoBehaviour
         }
     }
 
-    public void checkForHero(int x, int y)
+    public string round(int count, bool friendly)
+    {
+        if(friendly)
+        {
+            return count.ToString();
+        }
+
+        if(count < 4)
+        {
+            return "0?";
+        }
+        if(count < 20)
+        {
+            return "10?";
+        }
+        if(count < 40)
+        {
+            return "30?";
+        }
+        return "50?";
+    }
+
+    public Color colorFor(int team)
+    {
+        switch(team)
+        {
+            case 0: return Color.blue;
+            case 1: return Color.red;
+            case 2: return Color.green;
+            case 3: return Color.yellow;
+            // purple
+            case 4: return new Color(0.5f, 0, 1f);
+            // orange
+            case 5: return new Color(1f, 0.5f, 0f);
+        }
+        return Color.black;
+    }
+    public void checkForHero(int x, int y, int team)
     {
         // check if any hero is at this tile.
         foreach(var hero in worldRenderer.heroes.Values)
@@ -228,14 +262,16 @@ public class GameCursor : MonoBehaviour
                 heroInfoPopup.SetActive(true);
                 heroInfoPopup.transform.position = Input.mousePosition;
                 heroInfoPopup.transform.Find("Panel").Find("Hero Name").GetComponent<Text>().text = HeroModel.allNames[hero.Item2[2]["id"]];
-                heroInfoPopup.transform.Find("Panel").Find("InfStack").Find("Text").GetComponent<Text>().text = hero.Item2[2]["unit_stacks"][0].ToString();
-                heroInfoPopup.transform.Find("Panel").Find("ArcStack").Find("Text").GetComponent<Text>().text = hero.Item2[2]["unit_stacks"][1].ToString();
-                heroInfoPopup.transform.Find("Panel").Find("CavStack").Find("Text").GetComponent<Text>().text = hero.Item2[2]["unit_stacks"][2].ToString();
-                heroInfoPopup.transform.Find("Panel").Find("BalStack").Find("Text").GetComponent<Text>().text = hero.Item2[2]["unit_stacks"][3].ToString();
-                heroInfoPopup.transform.Find("Panel").Find("WizStack").Find("Text").GetComponent<Text>().text = hero.Item2[2]["unit_stacks"][4].ToString();
+                heroInfoPopup.transform.Find("Panel").Find("Hero Name").GetComponent<Text>().color = colorFor(hero.Item2[3]);
+                heroInfoPopup.transform.Find("Panel").Find("Stat").GetComponent<Text>().text = "POW " + hero.Item2[2]["attack_stat"] + " DEF " + hero.Item2[2]["health_stat"].ToString() + " SPD " + hero.Item2[2]["move_stat"].ToString();
+                heroInfoPopup.transform.Find("Panel").Find("InfStack").Find("Text").GetComponent<Text>().text = round(hero.Item2[2]["unit_stacks"][0], hero.Item2[3] % 2 == team % 2);
+                heroInfoPopup.transform.Find("Panel").Find("ArcStack").Find("Text").GetComponent<Text>().text = round(hero.Item2[2]["unit_stacks"][1], hero.Item2[3] % 2 == team % 2);
+                heroInfoPopup.transform.Find("Panel").Find("CavStack").Find("Text").GetComponent<Text>().text = round(hero.Item2[2]["unit_stacks"][2], hero.Item2[3] % 2 == team % 2);
+                heroInfoPopup.transform.Find("Panel").Find("BalStack").Find("Text").GetComponent<Text>().text = round(hero.Item2[2]["unit_stacks"][3], hero.Item2[3] % 2 == team % 2);
+                heroInfoPopup.transform.Find("Panel").Find("WizStack").Find("Text").GetComponent<Text>().text = round(hero.Item2[2]["unit_stacks"][4], hero.Item2[3] % 2 == team % 2);
                 heroInfoPopup.transform.Find("Panel").Find("MoveAmt").Find("Text").GetComponent<Text>().text = hero.Item2[2]["move_points"].ToString();
 
-                if (Input.GetMouseButtonDown(0))
+                if (Input.GetMouseButtonDown(0) && hero.Item2[3] == team)
                 {
                     selectedHero = hero.Item2[2]["id"].AsInt;
                     cursorState = CursorState.HERO;

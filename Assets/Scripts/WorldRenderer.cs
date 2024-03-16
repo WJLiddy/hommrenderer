@@ -83,7 +83,7 @@ public class WorldRenderer : MonoBehaviour
                 var targ = gridToWorldPosition(v.Value.Item2[0], v.Value.Item2[1]);
 
                 // walk anim
-                if(Vector3.Distance(Vector3.Scale(new Vector3(1,0,1),v.Value.Item1.transform.position), targ) < 2)
+                if(Vector3.Distance(Vector3.Scale(new Vector3(1,0,1),v.Value.Item1.transform.position), targ) < 0.2f)
                 {
                     v.Value.Item1.GetComponent<Animator>().SetBool("walk", false);
                     v.Value.Item1.transform.position = targ;
@@ -91,7 +91,7 @@ public class WorldRenderer : MonoBehaviour
                     // boost hero up if in a town
                     if (cities.ContainsKey(new Vector2Int(v.Value.Item2[0], v.Value.Item2[1])) || farms.ContainsKey(new Vector2Int(v.Value.Item2[0], v.Value.Item2[1])))
                     {
-                        v.Value.Item1.transform.position = targ + new Vector3(0, 0.5f, -1.5f);
+                        v.Value.Item1.transform.position = targ + new Vector3(0, 2f, 0f);
                     }
                 }
                 else
@@ -104,7 +104,7 @@ public class WorldRenderer : MonoBehaviour
                 // battle anim
                 foreach(var b in lastState["battles"].AsArray)
                 {
-                    if (v.Value.Item2[0] == b.Value[0] || v.Value.Item2[1] == b.Value[1])
+                    if (v.Value.Item2[0] == b.Value[0] && v.Value.Item2[1] == b.Value[1])
                     {
                         v.Value.Item1.GetComponent<Animator>().SetBool("fight", true);
                     }
@@ -295,15 +295,15 @@ public class WorldRenderer : MonoBehaviour
             switch(type)
             {
                 case "bitcoin":
-                    var v = Instantiate(bitcoinGroundItem, gridToWorldPosition(x, y), Quaternion.identity);
+                    var v = Instantiate(bitcoinGroundItem, gridToWorldPosition(x, y) + Vector3.up * 0.5f, Quaternion.Euler(40, 180, 0));
                     its.Add(v);
                     break;
                 case "pot":
-                    v = Instantiate(weedGroundItem, gridToWorldPosition(x, y), Quaternion.identity);
+                    v = Instantiate(weedGroundItem, gridToWorldPosition(x, y) + Vector3.up * 0.5f, Quaternion.Euler(40, 180, 0));
                     its.Add(v);
                     break;
                 case "cereal":
-                    v = Instantiate(cerealGroundItem, gridToWorldPosition(x, y), Quaternion.identity);
+                    v = Instantiate(cerealGroundItem, gridToWorldPosition(x, y) + Vector3.up * 0.5f, Quaternion.Euler(40,180,0));
                     its.Add(v);
                     break;
             }
@@ -387,14 +387,30 @@ public class WorldRenderer : MonoBehaviour
         bv.Populate(node);
 
         if(bv.watch != -1)
-        { 
-            br.Render(node["battles"][bv.watch][4]);
+        {
+            var tk1 = new Vector2Int(node["battles"][bv.watch][0], node["battles"][bv.watch][1]);
+            var tk2 = new Vector2Int(node["battles"][bv.watch][2], node["battles"][bv.watch][3]);
+            int t1 = 0;
+            int t2 = 0;
+            // find hero teams for these locations
+            foreach(var v in heroes)
+            {
+                if(tk1.x == v.Value.Item2[0] && tk1.y == v.Value.Item2[1])
+                {
+                    t1 = v.Value.Item2[3];
+                }
+                if (tk2.x == v.Value.Item2[0] && tk2.y == v.Value.Item2[1])
+                {
+                    t2 = v.Value.Item2[3];
+                }
+            }
+            br.Render(node["battles"][bv.watch][4],t1,t2);
         }
         lastState = node;
     }
 
    // next -> prev
-   public Dictionary<Vector2Int,Vector2Int> tilesWithinRangeOfHero(int x, int y, int dist)
+   public Dictionary<Vector2Int,Vector2Int> tilesWithinRangeOfHero(int x, int y, int dist, int pteam)
    {
         Vector2Int[] directions = new Vector2Int[4] { new Vector2Int(-1, 0), new Vector2Int(1, 0), new Vector2Int(0, 1), new Vector2Int(0, -1) };
         
@@ -437,6 +453,21 @@ public class WorldRenderer : MonoBehaviour
 
                 // no terrain
                 if (lastState["tiles"][newV.x][newV.y] == "water" || lastState["tiles"][newV.x][newV.y] == "mountain")
+                {
+                    continue;
+                }
+
+                bool ally = false;
+                // no allies
+                foreach (var hero in heroes)
+                {
+                    if (hero.Value.Item2[0] == newV.x && hero.Value.Item2[1] == newV.y && (hero.Value.Item2[3] % 2) == (pteam % 2))
+                    {
+                        ally = true;
+                    }
+                }
+
+                if(ally)
                 {
                     continue;
                 }

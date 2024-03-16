@@ -112,6 +112,8 @@ public class HeroModel : MonoBehaviour
                     // weaponset
                     SetInArray((atk * 6 + atkOffsets[atk]), weaponOptions);
 
+                    // fuck!
+                    SetInArray(ID % gear.Length, gear);
                     // print everything
                     //Debug.Log("Hero: " + ID + allNames[ID] + " Atk: " + atk + " Spd: " + spd + " Def: " + def);
                     return;

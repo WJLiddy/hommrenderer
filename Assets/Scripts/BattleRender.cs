@@ -30,8 +30,29 @@ public class BattleRender : MonoBehaviour
             rendered[v].transform.localPosition = Vector3.MoveTowards(rendered[v].transform.localPosition, moveTargets[v],  2 * Time.deltaTime);
         }
     }
+    public float maxHealthForTier(int tier)
+    {
+        switch(tier)
+        {
+            case 0: return 9;
+            case 1: return 3;
+            case 2: return 15;
+            case 3: return 24;
+            case 4: return 15;
+        }
+        return 0;
+    }
 
-    public void Render(SimpleJSON.JSONNode node)
+    public void Clear()
+    {
+        foreach(var v in rendered)
+        {
+            Destroy(v.Value);
+        }
+        rendered.Clear();
+    }
+
+    public void Render(SimpleJSON.JSONNode node, int team1, int team2)
     {
         HashSet<int> seen = new HashSet<int>();
         for(int x = 0; x < WIDTH; x++)
@@ -55,7 +76,7 @@ public class BattleRender : MonoBehaviour
                         go.transform.eulerAngles = new Vector3(0, team == 0 ? 90 : -90, 0);
                         foreach (var v in go.GetComponentsInChildren<SkinnedMeshRenderer>())
                         {
-                            v.material = wr.teamUnitColors[team];
+                            v.material = wr.teamUnitColors[team == 0 ? team1 : team2];
                         }
                         rendered[id] = (go);
                     }
@@ -66,6 +87,16 @@ public class BattleRender : MonoBehaviour
                         rendered[id].GetComponent<Animator>().SetBool("walk",true);
                     }
                     moveTargets[id] = new Vector3(x * 1.5f, 0, y * 1.5f);
+                    if (hp != maxHealthForTier(tier))
+                    {
+                        rendered[id].transform.Find("Health").localScale = new Vector3(0.1f, 0.1f, ((float)hp / maxHealthForTier(tier)));
+                    } 
+                    else
+                    {
+                        rendered[id].transform.Find("Health").localScale = new Vector3(0f, 0f,0f);
+                    }
+                    
+
                 }
             }
         }

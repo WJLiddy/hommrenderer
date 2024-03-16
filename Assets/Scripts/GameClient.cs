@@ -83,17 +83,19 @@ public class GameClient : MonoBehaviour
 
         timer -= Time.deltaTime;
 
+        //string addy = "http://52.7.149.204:7775";
+        string addy = "http://localhost:7775";
         if (timer < 0)
         {
             if (commandQueue.Count > 0)
             {
-                StartCoroutine(postRequest("localhost:7775", commandQueue.ToString()));
+                StartCoroutine(postRequest(addy, commandQueue.ToString()));
                 // dispatched the command, clear queue
                 commandQueue = SimpleJSON.JSONObject.Parse("[]").AsArray; // fuck
             }
             else
             {
-                StartCoroutine(postRequest("localhost:7775", ""));
+                StartCoroutine(postRequest(addy, ""));
             }
             timer = 1f;
         }

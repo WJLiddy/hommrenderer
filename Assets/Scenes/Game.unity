@@ -1496,7 +1496,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 0
+  m_Text: 3
 --- !u!222 &171054799
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1709,7 +1709,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 0
+  m_Text: 3
 --- !u!222 &200779389
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -5825,7 +5825,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 10
+  m_Text: 15
 --- !u!222 &631940054
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -5974,7 +5974,7 @@ GameObject:
   - component: {fileID: 645644069}
   - component: {fileID: 645644068}
   m_Layer: 5
-  m_Name: BuyBarrack
+  m_Name: RecruitHero
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6052,14 +6052,14 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1936110543}
         m_TargetAssemblyTypeName: GameCursor, Assembly-CSharp
-        m_MethodName: sendBuildCommand
+        m_MethodName: sendBuyCommand
         m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: NA
+          m_StringArgument: hero
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &645644069
@@ -6328,7 +6328,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 20
+  m_Text: 30
 --- !u!222 &700380490
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -7068,7 +7068,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 0
+  m_Text: 6
 --- !u!222 &767913137
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -7906,6 +7906,86 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 879161007}
   m_CullTransparentMesh: 1
+--- !u!1 &896371095
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 896371096}
+  - component: {fileID: 896371098}
+  - component: {fileID: 896371097}
+  m_Layer: 5
+  m_Name: Stat
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &896371096
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 896371095}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1958802883}
+  m_RootOrder: 7
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 5.5}
+  m_SizeDelta: {x: 160, y: 30}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &896371097
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 896371095}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_FontData:
+    m_Font: {fileID: 12800000, guid: a4ad9f7ccb3dfa84099222c7c5c6d21a, type: 3}
+    m_FontSize: 12
+    m_FontStyle: 0
+    m_BestFit: 0
+    m_MinSize: 1
+    m_MaxSize: 40
+    m_Alignment: 1
+    m_AlignByGeometry: 0
+    m_RichText: 1
+    m_HorizontalOverflow: 0
+    m_VerticalOverflow: 0
+    m_LineSpacing: 1
+  m_Text: DEF 3 DEF 3 DEF 3
+--- !u!222 &896371098
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 896371095}
+  m_CullTransparentMesh: 1
 --- !u!1 &899583321
 GameObject:
   m_ObjectHideFlags: 0
@@ -8057,7 +8137,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 7
+  m_Text: 9
 --- !u!222 &910114788
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -8684,7 +8764,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 35
+  m_Text: 90
 --- !u!222 &945315660
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -10415,7 +10495,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 25
+  m_Text: 60
 --- !u!222 &1100869515
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -10928,7 +11008,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 3
+  m_Text: 6
 --- !u!222 &1152817507
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -11380,7 +11460,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 5
+  m_Text: 9
 --- !u!222 &1221989367
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -11891,6 +11971,7 @@ MonoBehaviour:
   bannerBase: {fileID: 7034822746656341662, guid: 70c46df61665bfe41ae668f990f07730, type: 3}
   leftPanel: {fileID: 232098410}
   watch: 0
+  br: {fileID: 1539320662}
 --- !u!1 &1256850096
 GameObject:
   m_ObjectHideFlags: 0
@@ -15063,7 +15144,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 0
+  m_Text: 1
 --- !u!222 &1665038206
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -16656,7 +16737,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 0
+  m_Text: 1
 --- !u!222 &1934455311
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -16789,7 +16870,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: The City Of XXXXXX
+  m_Text: The City Menu (tm)
 --- !u!222 &1940147447
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -16835,6 +16916,7 @@ RectTransform:
   - {fileID: 1884260219}
   - {fileID: 456590558}
   - {fileID: 129532426}
+  - {fileID: 896371096}
   m_Father: {fileID: 818164226}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -17341,7 +17423,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 0
+  m_Text: 3
 --- !u!222 &2031143173
 CanvasRenderer:
   m_ObjectHideFlags: 0
